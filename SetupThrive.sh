@@ -12,14 +12,13 @@ function init() {
 	NC="\033[0m" # No Color
 
 	if [ -f ./thriveversion.ver -o "$InsideFolder" = "thrive" ]; then
-
 		# Running from thrive folder
 		StartingDirectory=$(dirname "$(pwd)")
-		
+
 	else
-		
 		StartingDirectory=$(pwd)
 	fi
+
 
 	# Variable setup
 	OS=$(cat /etc/*-release | grep ID | cut -c 4- | sed -e "s/\b\(.\)/\u\1/g")
@@ -78,9 +77,7 @@ function init() {
 	MakeArgs="-j $THREADS"
 
 	if [ $DEBUG = 1 -o $VERBOSE = 1 ]; then
-
 	    MakeArgs="$MakeArgs -d"
-	    
 	fi
 }
 
@@ -91,13 +88,10 @@ function install_Packages() {
 	CommonPackages="cmake make git mercurial svn"
 
 	if [ "$OS" = "Fedora" ]; then
-
 		echo -e "$INFO Creating CEGUI project folder for $OS $NC"
-	   
-	elif [ "$OS" = "Ubuntu" ]; then
 
+	elif [ "$OS" = "Ubuntu" ]; then
 		PackageManager="apt-get install -y "
-		 
 		PackagesToInstall="bullet-dev boost-dev build-essential automake libtool libfreetype6-dev \
 				   libfreeimage-dev libzzip-dev libxrandr-dev libxaw7-dev freeglut3-dev libgl1-mesa-dev \
 				   libglu1-mesa-dev libois-dev libboost-thread-dev tinyxml-dev glm-dev ffmpeg-dev libavutil-dev libopenal-dev"
@@ -109,9 +103,9 @@ function install_Packages() {
 				   ois tinyxml glm ffmpeg openal"
 
 	else
-		 
 		echo -e "$ERROR Unkown linux OS \"$OS\" $NC"
 		exit 2
+
 	fi
 
 	PackagesToInstall="$PackagesToInstall $CommonPackages"
@@ -121,9 +115,11 @@ function install_Packages() {
 
 	if [ $? -eq 0 ]; then
 		echo -e "$GOOD Prerequisites installed successfully $NC"
+
 	else
 		echo -e "$ERROR Package manager failed to install required packages, install \"$PackagesToInstall\" manually $NC"
 		exit 1
+
 	fi
 }
 
@@ -143,13 +139,13 @@ function prepare_Ogre() {
 
 	# Main repo
 	if [ -d ogre ]; then
-
 		cd ogre
 		hg pull
-			
+
 	else
 		hg clone https://bitbucket.org/sinbad/ogre ogre
 		cd ogre
+
 	fi
 
 	hg update v2-0
@@ -165,8 +161,8 @@ function prepare_Ogre() {
 
 	echo "cmake_minimum_required(VERSION 2.8.11)
 	# Let's try forcing static FreeImage
-	set(FreeImage_USE_STATIC_LIBS TRUE) 
-	# depencies must be first 
+	set(FreeImage_USE_STATIC_LIBS TRUE)
+	# depencies must be first
 	#add_subdirectory(ogredeps)
 	# actual ogre
 	add_subdirectory(ogre)" > CMakeLists.txt
@@ -184,13 +180,13 @@ function prepare_CEGUI() {
 	echo -e "$INFO CEGUI... $NC"
 
 	if [ -d cegui ]; then
-
-	cd cegui
-	hg pull
+		cd cegui
+		hg pull
 
 	else
-	hg clone https://bitbucket.org/cegui/cegui cegui
-	cd cegui
+		hg clone https://bitbucket.org/cegui/cegui cegui
+		cd cegui
+
 	fi
 
 	hg update default
@@ -208,11 +204,10 @@ function prepare_OgreFFMPEG() {
 	echo "OgreFFMPEG"
 
 	if [ -d ogre-ffmpeg-videoplayer ]; then
-
 		cd ogre-ffmpeg-videoplayer
 		git checkout master
 		git pull origin master
-		
+
 	else
 
 		#Official repo
@@ -235,17 +230,16 @@ function prepare_cAudio() {
 	echo "cAudio"
 
 	if [ -d cAudio ]; then
-
 		cd cAudio
 		#Workaround for broken latest version
 		#git checkout master
 		#git pull origin master
 
-		
-	else
 
+	else
 		git clone https://github.com/wildicv/cAudio.git
 		cd cAudio
+
 	fi
 
 	#Workaround for broken build with latest version
@@ -273,7 +267,7 @@ function build_Ogre() {
 	cd "$StartingDirectory/ogreBuild/build"
 	eval "make $MakeArgs"
 
-	
+
 	echo "Done"
 }
 
@@ -283,7 +277,7 @@ function build_CEGUI() {
 	cd "$StartingDirectory/cegui/build"
 	eval "make $MakeArgs"
 
-	
+
 	echo "Done"
 }
 
@@ -293,7 +287,7 @@ function build_OgreFFMPEG() {
 	cd "$StartingDirectory/ogre-ffmpeg-videoplayer/build"
 	eval "make $MakeArgs"
 
-	
+
 	echo "Done"
 }
 
@@ -347,14 +341,13 @@ function setup_Thrive() {
 	echo "Getting code"
 
 	if [ -d thrive ]; then
-
 		cd thrive
-		
-	else
 
+	else
 		git clone https://github.com/Revolutionary-Games/Thrive.git thrive
 		cd thrive
 		git submodule update --init --recursive
+
 	fi
 
 	git checkout $THRIVE_BRANCH
@@ -364,13 +357,12 @@ function setup_Thrive() {
 	echo "Getting assets"
 
 	if [ -d assets ]; then
-		(
 			cd assets
 			svn up
-		)   
-	else
 
+	else
 		svn checkout http://assets.revolutionarygamesstudio.com/ assets
+
 	fi
 
 	echo "Making all the links"
